@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <style type="text/css">
+        #userForm {
+        width: 50%;
+    }
+
+    #description {
+        max-width:590px;
+        padding:40px 20px;
+        position:fixed;
+        top:50%;
+        left:50%;
+        -webkit-transform:translate(-50%,-50%);
+        transform:translate(-50%,-50%);
+        z-index:9999;
+        background-color:#fff;
+        text-align:center;
+        display:none;
+        border: 1px solid #ccc;
+        border-radius: 7px;
+    }
+
+    #description table {
+        border-collapse: collapse;
+    }
+
+    #description table tr td {
+        width: 50px;
+        height: 50px;
+        padding: 10px;
+        border: 1px solid #000;
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    #close-modal {
+        font-size: 30px;
+        font-weight: bold;
+        display: inline-block;
+        position: absolute;
+        top: 5px;
+        right: 5px;
+    }
+
+    #close-modal:hover {
+        cursor: pointer;
+    }
+    </style>
+</head>
+<body>
+<div id="userForm"></div>
+<div id='description'>
+    <span id="close-modal">&times;</span>
+    <div id="descrTable"></div>
+</div>
+<script>
+    jQuery(document).ready(function(){
+    var userDay = '';
+    var userMonth = '';
+    var userYear = '';
+        
+    var form = "<form method='post' action=''>";
+    form += "<fieldset><legend>Укажите дату рождения</legend>";
+	form += "<label>День:</label>";
+    form += "<select name='dayOfBirthday' id='day'>";
+    form += "<option value='0'></option>";
+    for (var i = 1; i <= 31; i++) {
+        form += "<option value='" + i + "'>" + i + "</option>";
+    }
+    form += "</select>";
+    
+    form += "&nbsp;&nbsp;<label>Месяц:</label>";
+    form += "<select name='monthOfBirthday' id='month'>";
+    form += "<option value='0'></option>";
+    form += "<option value='1'>Январь</option>";
+    form += "<option value='2'>Февраль</option>";
+    form += "<option value='3'>Март</option>";
+    form += "<option value='4'>Апрель</option>";
+    form += "<option value='5'>Май</option>";
+    form += "<option value='6'>Июнь</option>";
+    form += "<option value='7'>Июль</option>";
+    form += "<option value='8'>Август</option>";
+    form += "<option value='9'>Сентябрь</option>";
+    form += "<option value='10'>Октябрь</option>";
+    form += "<option value='11'>Ноябрь</option>";
+    form += "<option value='12'>Декабрь</option>";
+    form += "</select>";
+    form += "&nbsp;&nbsp;<label>Год:</label>";
+    form += "<select name='yearOfBirthday' id='year'>";
+    form += "<option value='0'></option>";
+    var mdate = new Date();
+    for (i = mdate.getFullYear(); i >= 1900; i--) {
+        form += "<option value='" + i + "'>" + i + "</option>";
+    }
+    form += "</select><br>";
+    form += "</fieldset>";
+    form += "</form>";
+    form += "<center><br><br><button id='btnSend'>Рассчитать</button></center>";
+        
+    jQuery("#userForm").append(form);
+        
+    jQuery("#day").change(function(){
+        userDay = jQuery(this).val();
+        if (userDay < 10) userDay = '0' + userDay;
+    });
+    
+    jQuery("#month").change(function(){
+        userMonth = jQuery(this).val();
+        if (userMonth < 10) userMonth = '0' + userMonth;
+    });
+        
+    jQuery("#year").change(function(){
+        userYear = jQuery(this).val();
+    });
+        
+    jQuery("#btnSend").click(function(){
+        var userDate = userDay + userMonth + userYear;
+        var num1 = 0;
+        for (var i = 0; i < userDate.length; i++) {
+            num1 = num1 + Number(userDate.charAt(i));
+        }
+        num1 = num1 + '';
+            
+        var num2 = 0;
+        for (var i = 0; i < num1.length; i++) {
+            num2 = num2 + Number(num1.charAt(i));
+        }
+        num2 = num2 + '';
+        
+        var num3 = 0;
+        var symbol =  userDate.charAt(0);
+        if (symbol == '0') symbol = userDate.charAt(1);
+        num3 = Number(num1 - (Number(symbol) * 2));
+        if (num3 < 0) num3 = num3 * (-1);
+        num3 = num3 + '';
+        
+        var num4 = 0;
+        for (var i = 0; i < num3.length; i++) {
+            num4 = num4 + Number(num3.charAt(i));
+        }
+        num4 = num4 + '';
+        
+        let arr = [];
+        for (i = 1; i <= 9; i++) {
+            arr[i] = '';
+        }
+        
+        userDate = userDate + num1 + num2 + num3 + num4;
+        
+        for (i = 0; i < userDate.length; i++) {
+            symbol = userDate.charAt(i);
+            if (symbol != 0) {
+                arr[Number(symbol)] = arr[Number(symbol)] + symbol;
+            }
+        }
+        var pythagorasSquare = '';
+        var numberCell = -2;
+        pythagorasSquare += '<table>';
+        for (i = 1; i <= 3; i++) {
+            pythagorasSquare += '<tr>';
+            for (j = 1; j <= 3; j++) {
+                numberCell = numberCell + 3;
+                if (arr[numberCell] != '') {
+                    pythagorasSquare += '<td>' + arr[numberCell] + '</td>';
+                }
+                else {
+                    pythagorasSquare += '<td>--</td>';
+                }
+            }
+            numberCell = numberCell - 8;
+            pythagorasSquare += '</tr>';
+        }
+        pythagorasSquare += '</table>';
+                
+        jQuery("#descrTable").html(' ');
+        jQuery("#descrTable").append(pythagorasSquare);
+        jQuery("#description").css("display", "block");
+    });
+        
+    jQuery("#close-modal").click(function(){
+        jQuery("#description").css("display", "none");
+    });
+        
+});
+    
+    
+    
+    
+</script>
+</body>
+</html>
